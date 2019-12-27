@@ -4,9 +4,6 @@
 #include <linux/device.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
-#include <linux/timer.h>
-#include <asm/delay.h>
-#include <linux/timer.h>
 #include <linux/delay.h>
 
 MODULE_AUTHOR("Ryusei Otsuka");
@@ -18,6 +15,18 @@ static dev_t dev;
 static struct cdev cdv;
 static struct class *cls = NULL;
 static volatile u32 *gpio_base = NULL;
+void ton(){
+  gpio_base[7] = 1 << 25;
+  msleep(100);
+  gpio_base[10] = 1 << 25;
+  msleep(100);
+}
+void tsu(){
+  gpio_base[7] = 1 << 25;
+  msleep(300);
+  gpio_base[10] = 1 << 25;
+  msleep(100);
+}
 
 static ssize_t led_write(struct file* filp, const char* buf, size_t count, loff_t* pos)
 {
@@ -25,7 +34,34 @@ static ssize_t led_write(struct file* filp, const char* buf, size_t count, loff_
   if(copy_from_user(&c,buf,sizeof(char)))
   return -EFAULT;
 
-  /*koko ni kaku*/
+  switch(c){
+    case 'A':ton();tsu();break;
+    case 'B':tsu();ton();ton();ton();break;
+    case 'C':tsu();ton();tsu();ton();break;
+    case 'D':tsu();ton();ton();break;
+    case 'E':ton();break;
+    case 'F':ton();ton();tsu();ton();break;
+    case 'G':tsu();tsu();ton();break;
+    case 'H':ton();ton();ton();ton();break;
+    case 'I':ton();ton();break;
+    case 'J':ton();tsu();tsu();tsu();break;
+    case 'K':tsu();ton();tsu();break;
+    case 'L':ton();tsu();ton();ton();break;
+    case 'M':tsu();tsu();break;
+    case 'N':tsu();ton();break;
+    case 'O':tsu();tsu();tsu();break;
+    case 'P':ton();tsu();tsu();ton();break;
+    case 'Q':tsu();tsu();ton();tsu();break;
+    case 'R':ton();tsu();ton();break;
+    case 'S':ton();ton();ton();break;
+    case 'T':tsu();break;
+    case 'U':ton();ton();tsu();break;
+    case 'V':ton();ton();ton();tsu();break;
+    case 'W':ton();tsu();tsu();break;
+    case 'X':tsu();ton();ton();tsu();break;
+    case 'Y':tsu();ton();tsu();tsu();break;
+    case 'Z':tsu();tsu();ton();ton();break;
+  }
 
   printk(KERN_INFO "recive:%c\n",c);
   gpio_base[10] = 1 << 25;
